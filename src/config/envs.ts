@@ -9,5 +9,6 @@ export const envs = {
   LOGINSITE: get('LOGINSITE').required().asString(),
   SECRETKEYAPTP: get('SECRETKEYAPTP').required().asString(),
   RETURNURL: get('RETURNURL').required().asString(),
+  URLBASE: get('URLBASE').required().asString(),
  
 }
