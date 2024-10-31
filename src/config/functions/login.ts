@@ -8,7 +8,7 @@ const login = envs.LOGINSITE;
 const secretKey = envs.SECRETKEYAPTP;
 const seed = new Date().toISOString();
 const rawNonce = Math.floor(Math.random() * 1000000);
-
+// console.log(login)
 const tranKey = Buffer.from(
     new Uint8Array(
       crypto.createHash('sha256').update(rawNonce + seed + secretKey).digest()
@@ -24,6 +24,7 @@ const auth:AuthClass=
     nonce: nonce, //Valor aleatorio para cada solicitud codificado en Base64.
     seed: seed, //fecha en formato especifico formato ISO 8601
   }
+  //console.log(auth)
 
 return auth;
 }

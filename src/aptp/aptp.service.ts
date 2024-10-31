@@ -1,87 +1,63 @@
-import { PrismaClient } from '@prisma/client';
-import { getAuth, sumar24Horas } from '../config/functions';
-import { Amount, Payment } from '../config/interfaces';
-import { envs } from '../config/envs';
+//import { PrismaClient } from '@prisma/client';
+import { getAuth, sumar5Horas } from '../config/functions'
+import { Amount, Payment } from '../config/interfaces'
+import { envs } from '../config/envs'
+import axios from 'axios'
 
-
-class AptpService extends PrismaClient {
-  constructor() {
-   // const dbHost = envs.DB_HOST;
-    //const dbPort = envs.DB_PORT;
-    //const dbUser = envs.DB_USER;
-    //const dbPassword = envs.DB_PASSWORD;
-    //const database = envs.DATABASE;
-
-    super( );
-
-    this.init(); 
-  }
+export class AptpService {
+  constructor () {
   
-   ///se cambiara los metodos 
-  async onRequestLogin(reference: string, description: string, amount:Amount,ipAddress:string,userAgent:string) {
-   
+  }
 
+  ///se cambiara los metodos
+  async onRequestLogin (
+    reference: string,
+    description: string,
+    amount: Amount,
+    ipAddress: string,
+    userAgent: string
+  ) {
     //se enviara un payload a una url y esperaremos de respuesta una url
-    const auth = getAuth();
-    const fechaSumada = sumar24Horas();
+    const auth = getAuth()
+    const fechaSumada = sumar5Horas()
 
-    const payment:Payment = {
-    "paymentMethod": "pse", //aqui se cambiara el metodo de pago
-    reference,
-    description,
-    amount
-
+    const payment: Payment = {
+      paymentMethod: 'pse', //aqui se cambiara el metodo de pago
+      reference,
+      description,
+      amount
     }
-   
+
     const sendPayload = {
-        "locale": "es_CO",
-        auth: auth,
-        payment,
-        "expiration": fechaSumada,
-        "returnUrl": `${envs.RETURNURL}`,
-        ipAddress,
-        userAgent 
-       
+      locale: 'es_CO',
+      auth: auth,
+      payment,
+      expiration: fechaSumada,
+      returnUrl: envs.RETURNURL,
+      ipAddress,
+      userAgent
     }
-    console.log(sendPayload);
-    //despues de enviar el payload se retornara una url processUrl
-    //tambien regresa un requestId este tambien se manda al front
+
     //ya esta la interface de la respuesta de a place to pay con la url
-    
-   
-    return {paymentUrl: 'https://google.com'};
-  }
-
-  async onRequestConsult(payload: any) {
-      console.log(payload);
-  }
-
- 
-  
-  async init() {
+    //'https://checkout.test.goupagos.com.co'
+    //`https://checkout-test.placetopay.com/api/session`
     try {
-      await this.$connect();
-      console.log(`Conexión a la base de datos establecida correctamente.`);
-    } catch (error) {
-      console.error('Error al conectar con la base de datos:', error);
+      const response = await axios.post('https://checkout.test.goupagos.com.co/api/session', sendPayload);
+      const { data } = response;
+  console.log(data)
+      const processUrl = data.processUrl;
+      const requestId = data.requestId;
+   
+      return { processUrl, requestId };
+    } catch (error:any) {
+      const errorMessage = error.response?.data?.status?.message;
+      console.error('Error:', errorMessage);
+      return { error: 'Error al enviar el payload' };
     }
+    
   }
 
-  async destroy() {
-    await this.$disconnect();
+  async onRequestConsult (payload: any) {
+    console.log(payload)
   }
 }
-
-const aptpService = new AptpService();
-
-process.on('SIGINT', async () => {
-  await aptpService.destroy();
-  process.exit(0);
-});
-
-process.on('SIGTERM', async () => {
-  await aptpService.destroy();
-  process.exit(0);
-});
-
-export default AptpService;

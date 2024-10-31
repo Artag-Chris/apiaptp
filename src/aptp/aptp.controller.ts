@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import AptpService from './aptp.service';
+import {AptpService} from './aptp.service';
 //import PrismaService from './prisma.service'; 
 
 
