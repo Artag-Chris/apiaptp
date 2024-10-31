@@ -20,7 +20,7 @@ export class AptpService {
     const auth = getAuth()
     const fechaSumada = sumar5Horas()
     const payment: Payment = {
-      paymentMethod: 'pse', //aqui se cambiara el metodo de pago
+      paymentMethod: `pse`, //aqui se cambiara el metodo de pago
       reference,
       description,
       amount
