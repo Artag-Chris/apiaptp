@@ -1,6 +1,6 @@
 //import { PrismaClient } from '@prisma/client';
 import axios from 'axios'
-import { SimpleRequestpay, Amount, envs, buildLogger } from '../config'
+import { SimpleRequestpay, Amount, envs, buildLogger, getAuth } from '../config'
 
 export class AptpService {
   constructor () {
@@ -38,7 +38,14 @@ export class AptpService {
       return { error: 'Error al enviar el payload' }
     }
   }
-  async onRequestConsult (payload: any) {
-    console.log(payload)
+  async onRequestConsult (requestId: any) {
+    const auth = getAuth()
+ const payload={
+  auth
+ }
+ const response = await axios.post(`${envs.URLBASE}/${requestId}`, payload)
+//aqui se puede inicar el proceso para guardar
+//la informacion en la base de datos antes de mandar la respuesta
+ return response.data
   }
 }

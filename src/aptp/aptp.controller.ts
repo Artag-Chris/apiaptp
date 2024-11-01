@@ -30,8 +30,11 @@ export class AptpController {
       
     }
     onConsult= async(req:Request, res:Response) =>{
-        const payload= req.body;
-        const response =await this.aptpService.onRequestConsult(payload);
+        const {requestId}= req.params;
+        console.log(`requestId:${requestId}`)
+        //const {requestId}= req.params;
+        //console.log(`requestId:${requestId}`)
+        const response =await this.aptpService.onRequestConsult(requestId);
         res.status(200).send(response);
     }
   

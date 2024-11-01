@@ -13,7 +13,7 @@ export class AptpRoutes {
 
     router.post(`/simplelogin`,aptpController.onLogin);
   
-    router.post(`consultservice`,aptpController.onConsult);
+    router.get(`/consultrequest/:requestId`,aptpController.onConsult);
 
     
 
