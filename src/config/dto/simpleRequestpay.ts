@@ -24,13 +24,16 @@ export class SimpleRequestpay {
     ]
   }
   static createPayload (SimpleRequestpay: SimpleRequestpay) {
-    
+
     const { reference, description, amount, ipAddress, userAgent } =
       SimpleRequestpay
     const auth = getAuth()
     const fechaSumada = sumar5Horas()
     const locale = 'es_CO'
     const returnUrl = envs.RETURNURL
+    //aqui se colocaria los metodos de pago especificos
+    //si supiera como y se colocan en el return
+    
 
     return {
       auth,

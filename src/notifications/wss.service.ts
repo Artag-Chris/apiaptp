@@ -52,10 +52,10 @@ export class WssService {
         const messageString = message.toString('utf8');
        console.log('mensaje recibido:', messageString);
         try {
-          const data = JSON.parse(message);
-          // Aquí puedes manejar el objeto JSON recibido
+         // const data = JSON.parse(message);
+           //Aquí puedes manejar el objeto JSON recibido
           //console.log(`mensaje recibido:${data}`, );
-          this.sendMessage('broadcast', data);
+          this.sendMessage('broadcast', messageString);
          // prismaService.onMessageReceived(data);
 
         } catch (error) {

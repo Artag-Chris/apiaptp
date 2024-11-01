@@ -5,7 +5,7 @@ import { SimpleRequestpay, Amount, envs, buildLogger } from '../config'
 export class AptpService {
   constructor () {
     this.logger = buildLogger(`application.service.ts`)
-    //TODOiniciar la clase de prisma para guardar la info
+    //TODO iniciar la clase de prisma para guardar la info
   }
 
   logger = buildLogger(`application.service.ts`)
