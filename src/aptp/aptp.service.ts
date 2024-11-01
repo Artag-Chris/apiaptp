@@ -1,9 +1,6 @@
 //import { PrismaClient } from '@prisma/client';
 import axios from 'axios'
-import { Amount } from '../config/interfaces'
-import { envs } from '../config/envs'
-import { buildLogger } from '../config/pluggins/logger.pluggin'
-import { SimpleRequestpay } from '../config/dto/simpleRequestpay'
+import { SimpleRequestpay, Amount, envs, buildLogger } from '../config'
 
 export class AptpService {
   constructor () {
@@ -13,15 +10,12 @@ export class AptpService {
   logger = buildLogger(`application.service.ts`)
 
   async onRequestSimplePayment (
-
     reference: string,
     description: string,
     amount: Amount,
     ipAddress: string,
     userAgent: string
-    
   ) {
-
     const sendPayload = SimpleRequestpay.createPayload({
       reference,
       description,
@@ -37,7 +31,6 @@ export class AptpService {
       const requestId = data.requestId
 
       return { processUrl, requestId }
-
     } catch (error: any) {
       const errorMessage = error.response?.data?.status?.message
       this.logger.log(`data:${JSON.stringify(errorMessage)}`)
