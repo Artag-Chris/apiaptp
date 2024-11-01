@@ -1,59 +1,51 @@
 //import { PrismaClient } from '@prisma/client';
-import { getAuth, sumar5Horas } from '../config/functions'
-import { Amount, Payment } from '../config/interfaces'
-import { envs } from '../config/envs'
-import {buildLogger}  from "../config/pluggins/logger.pluggin";
 import axios from 'axios'
+import { Amount } from '../config/interfaces'
+import { envs } from '../config/envs'
+import { buildLogger } from '../config/pluggins/logger.pluggin'
+import { SimpleRequestpay } from '../config/dto/simpleRequestpay'
 
 export class AptpService {
   constructor () {
-  
+    this.logger = buildLogger(`application.service.ts`)
   }
-  ///se cambiara los metodos
-  async onRequestLogin (
+
+  logger = buildLogger(`application.service.ts`)
+
+  async onRequestSimplePayment (
+
     reference: string,
     description: string,
     amount: Amount,
     ipAddress: string,
     userAgent: string
+    
   ) {
-    const logger=buildLogger(`application.service.ts`)
-    const auth = getAuth()
-    const fechaSumada = sumar5Horas()
-    const payment: Payment = {
-      paymentMethod: `pse`, //aqui se cambiara el metodo de pago
+
+    const sendPayload = SimpleRequestpay.createPayload({
       reference,
       description,
-      amount
-    }
-    const sendPayload = {
-      locale: 'es_CO',
-      auth: auth,
-      payment,
-      expiration: fechaSumada,
-      returnUrl: envs.RETURNURL,
+      amount,
       ipAddress,
       userAgent
-    }
+    })
 
     try {
-      const response = await axios.post(envs.URLBASE, sendPayload);
-      const { data } = response;
-      
-     // logger.log(`data:${JSON.stringify(data)}`)
-      
-      const processUrl = data.processUrl;
-      const requestId = data.requestId;
-      return { processUrl, requestId };
-    } catch (error:any) {
-      const errorMessage = error.response?.data?.status?.message;
-      logger.log(`data:${JSON.stringify(errorMessage)}`)
-      return { error: 'Error al enviar el payload' };
-    }  
+      const response = await axios.post(envs.URLBASE, sendPayload)
+      const { data } = response
+      const processUrl = data.processUrl
+      const requestId = data.requestId
+
+      return { processUrl, requestId }
+
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.status?.message
+      this.logger.log(`data:${JSON.stringify(errorMessage)}`)
+
+      return { error: 'Error al enviar el payload' }
+    }
   }
   async onRequestConsult (payload: any) {
     console.log(payload)
   }
 }
-
-

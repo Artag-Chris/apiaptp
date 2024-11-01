@@ -14,7 +14,6 @@ export class AptpController {
         if (error instanceof CustomError) {
           return res.status(error.statusCode).json({ error: error.message });
         }
-    
         return res.status(500).json({ error: `Internal Server Error` });
       };
     
@@ -23,17 +22,15 @@ export class AptpController {
         const {reference, description, amount,ipAddress, userAgent } = payload;
         const userAgentValue = userAgent !== null && userAgent !== undefined ? userAgent : 'Desconocido';
 
-        await this.aptpService.onRequestLogin(reference, description, amount,ipAddress, userAgentValue)
+         this.aptpService
+        .onRequestSimplePayment (reference, description, amount,ipAddress, userAgentValue)
         .then((result)=>res.json(result))
         .catch((error)=>this.handleError(error, res));
         
-        //const response =await this.aptpService.onRequestLogin(reference, description, amount,ipAddress, userAgentValue,);
-        
-        //res.status(200).send(response);
+      
     }
     onConsult= async(req:Request, res:Response) =>{
         const payload= req.body;
-       
         const response =await this.aptpService.onRequestConsult(payload);
         res.status(200).send(response);
     }
