@@ -38,17 +38,14 @@ export class AptpService {
     try {
       const response = await axios.post(envs.URLBASE, sendPayload);
       const { data } = response;
-      //console.log(data)
       const processUrl = data.processUrl;
       const requestId = data.requestId;
-   
       return { processUrl, requestId };
     } catch (error:any) {
       const errorMessage = error.response?.data?.status?.message;
       console.error('Error:', errorMessage);
       return { error: 'Error al enviar el payload' };
-    }
-    
+    }  
   }
   async onRequestConsult (payload: any) {
     console.log(payload)
