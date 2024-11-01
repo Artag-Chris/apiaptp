@@ -2,6 +2,7 @@
 import { getAuth, sumar5Horas } from '../config/functions'
 import { Amount, Payment } from '../config/interfaces'
 import { envs } from '../config/envs'
+import {buildLogger}  from "../config/pluggins/logger.pluggin";
 import axios from 'axios'
 
 export class AptpService {
@@ -16,7 +17,7 @@ export class AptpService {
     ipAddress: string,
     userAgent: string
   ) {
-    
+    const logger=buildLogger(`application.service.ts`)
     const auth = getAuth()
     const fechaSumada = sumar5Horas()
     const payment: Payment = {
@@ -38,12 +39,15 @@ export class AptpService {
     try {
       const response = await axios.post(envs.URLBASE, sendPayload);
       const { data } = response;
+      
+     // logger.log(`data:${JSON.stringify(data)}`)
+      
       const processUrl = data.processUrl;
       const requestId = data.requestId;
       return { processUrl, requestId };
     } catch (error:any) {
       const errorMessage = error.response?.data?.status?.message;
-      console.error('Error:', errorMessage);
+      logger.log(`data:${JSON.stringify(errorMessage)}`)
       return { error: 'Error al enviar el payload' };
     }  
   }
@@ -51,3 +55,5 @@ export class AptpService {
     console.log(payload)
   }
 }
+
+

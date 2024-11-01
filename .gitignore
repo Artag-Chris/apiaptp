@@ -1,3 +1,5 @@
 node_modules
 .env
 prisma/
+combined.log
+error.log
