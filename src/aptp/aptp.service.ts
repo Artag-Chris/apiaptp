@@ -26,11 +26,10 @@ export class AptpService {
 
     try {
       const response = await axios.post(envs.URLBASE, sendPayload)
-      const { data } = response
-      const processUrl = data.processUrl
-      const requestId = data.requestId
-
+      const { processUrl, requestId } = response.data
+      
       return { processUrl, requestId }
+
     } catch (error: any) {
       const errorMessage = error.response?.data?.status?.message
       this.logger.log(`data:${JSON.stringify(errorMessage)}`)
