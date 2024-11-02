@@ -6,3 +6,4 @@ export * from './headers/header';
 export * from './functions/login';
 export * from './functions/expiration';
 export * from './interfaces';
+export * from './interfaces/aptpPayment.res';

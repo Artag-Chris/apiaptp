@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import {AptpService} from './aptp.service';
 import { CustomError } from '../config';
+import { PrismaService } from '../database/prisma/prismaService';
 //import PrismaService from './prisma.service'; 
 
 
@@ -8,7 +9,10 @@ import { CustomError } from '../config';
 export class AptpController {
     constructor(
         private readonly aptpService = new AptpService(),
-    ) {}
+        private readonly prismaService = new PrismaService(),
+    ) {
+
+    }
 
     private handleError = (error: unknown, res: Response) => {
         if (error instanceof CustomError) {
@@ -30,11 +34,11 @@ export class AptpController {
       
     }
     onConsult= async(req:Request, res:Response) =>{
+        //TODO: arreglar con error
         const {requestId}= req.params;
-        console.log(`requestId:${requestId}`)
-        //const {requestId}= req.params;
-        //console.log(`requestId:${requestId}`)
+       
         const response =await this.aptpService.onRequestConsult(requestId);
+
         res.status(200).send(response);
     }
   
