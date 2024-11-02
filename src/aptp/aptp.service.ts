@@ -1,11 +1,11 @@
 //import { PrismaClient } from '@prisma/client';
 import axios from 'axios'
-import { SimpleRequestpay, Amount, envs, buildLogger, getAuth} from '../config'
+import { SimpleRequestpay, Amount, envs, buildLogger, getAuth } from '../config'
+import { PrismaService } from '../database/prisma/prismaService'
 
 export class AptpService {
-  constructor () {
+  constructor (private readonly prisma = new PrismaService()) {
     this.logger = buildLogger(`application.service.ts`)
-    //TODO iniciar la clase de prisma para guardar la info
   }
 
   logger = buildLogger(`application.service.ts`)
@@ -28,9 +28,8 @@ export class AptpService {
     try {
       const response = await axios.post(envs.URLBASE, sendPayload)
       const { processUrl, requestId } = response.data
-      
-      return { processUrl, requestId }
 
+      return { processUrl, requestId }
     } catch (error: any) {
       const errorMessage = error.response?.data?.status?.message
       this.logger.log(`data:${JSON.stringify(errorMessage)}`)
@@ -40,42 +39,40 @@ export class AptpService {
   }
   async onRequestConsult (requestId: any) {
     const auth = getAuth()
- const payload={
-  auth
- }
- const response = await axios.post(`${envs.URLBASE}/${requestId}`, payload)
+    const payload = {
+      auth
+    }
+    const response = await axios.post(`${envs.URLBASE}/${requestId}`, payload)
 
- const { status,request } = response.data
- const { payment,payer } = request
- const { document, documentType, name, surname, email, mobile } = payer
- const {date,
-  reason,
-  message}=status
-  const state= status.status
- const {reference, description, amount, } = payment
- const amountValue = amount.total
- const guardarTranferencia = {
-   name,
-   surname,
-   email,
-   mobile,
-   document,
-   documentType,
-   transaction: {
-     reference,
-     description,
-     amountValue,
-     date,
-     reason,
-     message,
-     state
-   }
-  
- }
- console.log(guardarTranferencia)
-//aqui se puede inicar el proceso para guardar
-//la informacion en la base de datos antes de mandar la respuesta
- return response.data
+    const { status, request } = response.data
+    const { payment, payer } = request
+    const { document, documentType, name, surname, email, mobile } = payer
+    const { date, reason, message } = status
+    const state = status.status
+    const lastName=surname
+    const { reference, description, amount } = payment
+    const amountValue = amount.total
+    const guardarTranferencia = {
+      name,
+      lastName,
+      email,
+      mobile,
+      document,
+      documentType,
+      transactions: {
+        reference,
+        description,
+        amountValue,
+        date,
+        reason,
+        message,
+        state
+      }
+    }
+    this.prisma.guardarRegistro(guardarTranferencia)
+    console.log(guardarTranferencia)
+    //aqui se puede inicar el proceso para guardar
+    //la informacion en la base de datos antes de mandar la respuesta
+    return response.data
   }
-
 }
