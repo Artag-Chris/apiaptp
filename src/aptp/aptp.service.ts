@@ -44,14 +44,14 @@ export class AptpService {
     }
     const response = await axios.post(`${envs.URLBASE}/${requestId}`, payload)
 
-    const { status, request } = response.data
+    const { request } = response.data
     const { payment, payer } = request
     const { document, documentType, name, surname, email, mobile } = payer
-    const { date, reason, message } = status
-    const state = status.status
+    const { date, reason, message } = response.data.status
+    const status = response.data.status.status
     const lastName = surname
-    const { reference, description, amount } = payment
-    const amountValue = amount.total
+    const { reference, description,  } = payment
+    const amount = payment.amount.total
     const guardarTranferencia = {
       name,
       lastName,
@@ -61,14 +61,14 @@ export class AptpService {
       documentType,
       reference,
       description,
-      amountValue,
+      amount,
       date,
       reason,
       message,
-      state
+      status
     }
-    this.prisma.guardarRegistro(guardarTranferencia)
-    console.log(guardarTranferencia)
+    await this.prisma.guardarRegistro(guardarTranferencia)
+    //console.log(guardarTranferencia)
     //aqui se puede inicar el proceso para guardar
     //la informacion en la base de datos antes de mandar la respuesta
     return response.data

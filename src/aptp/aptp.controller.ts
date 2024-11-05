@@ -1,15 +1,12 @@
 import { Request, Response } from 'express';
 import {AptpService} from './aptp.service';
 import { CustomError } from '../config';
-import { PrismaService } from '../database/prisma/prismaService';
-//import PrismaService from './prisma.service'; 
-
 
 
 export class AptpController {
     constructor(
         private readonly aptpService = new AptpService(),
-        private readonly prismaService = new PrismaService(),
+        
     ) {
 
     }
@@ -34,12 +31,14 @@ export class AptpController {
       
     }
     onConsult= async(req:Request, res:Response) =>{
-        //TODO: arreglar con error
+
         const {requestId}= req.params;
        
-        const response =await this.aptpService.onRequestConsult(requestId);
+        await this.aptpService.onRequestConsult(requestId)
+        .then((result)=>res.json(result))
+        .catch((error)=>this.handleError(error, res));
 
-        res.status(200).send(response);
+        
     }
   
 
