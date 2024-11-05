@@ -3,3 +3,4 @@ node_modules
 prisma/
 combined.log
 error.log
+mysql_data

@@ -49,7 +49,7 @@ export class AptpService {
     const { document, documentType, name, surname, email, mobile } = payer
     const { date, reason, message } = status
     const state = status.status
-    const lastName=surname
+    const lastName = surname
     const { reference, description, amount } = payment
     const amountValue = amount.total
     const guardarTranferencia = {
@@ -59,15 +59,13 @@ export class AptpService {
       mobile,
       document,
       documentType,
-      transactions: {
-        reference,
-        description,
-        amountValue,
-        date,
-        reason,
-        message,
-        state
-      }
+      reference,
+      description,
+      amountValue,
+      date,
+      reason,
+      message,
+      state
     }
     this.prisma.guardarRegistro(guardarTranferencia)
     console.log(guardarTranferencia)
