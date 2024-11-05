@@ -4,10 +4,10 @@ import { PrismaService } from '../database/prisma/prismaService'
 
 export class AptpService {
   constructor (private readonly prisma = new PrismaService()) {
-    
+    this.logger = buildLogger(`aptp.service.ts`)
   }
 
-  logger = buildLogger(`application.service.ts`)
+  logger = buildLogger(`aptp.service.ts`)
 
   async onRequestSimplePayment (
     reference: string,
@@ -36,7 +36,7 @@ export class AptpService {
       return { error: 'Error al enviar el payload' }
     }
   }
-  async onRequestConsult (requestId: any) {
+  async onRequestConsult (requestId: string) {
     const auth = getAuth()
     const payload = {
       auth
@@ -67,6 +67,9 @@ export class AptpService {
       status
     }
     await this.prisma.guardarRegistro(guardarTranferencia)
+    .then((res: any) => {
+      console.log("Guardado")
+    })
     //console.log(guardarTranferencia)
     //aqui se puede inicar el proceso para guardar
     //la informacion en la base de datos antes de mandar la respuesta
