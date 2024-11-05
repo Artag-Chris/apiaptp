@@ -1,11 +1,10 @@
-//import { PrismaClient } from '@prisma/client';
 import axios from 'axios'
 import { SimpleRequestpay, Amount, envs, buildLogger, getAuth } from '../config'
 import { PrismaService } from '../database/prisma/prismaService'
 
 export class AptpService {
   constructor (private readonly prisma = new PrismaService()) {
-    this.logger = buildLogger(`application.service.ts`)
+    
   }
 
   logger = buildLogger(`application.service.ts`)
