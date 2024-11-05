@@ -4,7 +4,7 @@ import { SimpleSaveRequestDB } from '../../config/dto/simpleSaveRequestDB';
 
 export class PrismaService extends PrismaClient {
   constructor () {
-    
+     
     super()
     
   }
