@@ -17,12 +17,14 @@ export class AptpService {
     ipAddress: string,
     userAgent: string
   ) {
+    const paymentMethod:any= 'pse, ath';
     const sendPayload = SimpleRequestpay.createPayload({
       reference,
       description,
       amount,
       ipAddress,
-      userAgent
+      userAgent,
+      paymentMethod
     })
 
     try {
@@ -33,7 +35,6 @@ export class AptpService {
     } catch (error: any) {
       const errorMessage = error.response?.data?.status?.message
       this.logger.log(`data:${JSON.stringify(errorMessage)}`)
-
       return { error: 'Error al enviar el payload' }
     }
   }
@@ -70,7 +71,6 @@ export class AptpService {
     await this.prisma.guardarRegistro(guardarTranferencia)
       .then((response) => console.log(response))
       .catch((error) => console.log(error));
-  
     return response.data;
   }
   
