@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, response, Response } from 'express';
 import {AptpService} from './aptp.service';
 import { CustomError } from '../config';
 
@@ -33,6 +33,7 @@ export class AptpController {
     onConsult= async(req:Request, res:Response) =>{
 
         const {requestId}= req.params;
+        console.log('Request ID:', requestId);
        
         await this.aptpService.onRequestConsult(requestId)
         .then((result)=>res.json(result))

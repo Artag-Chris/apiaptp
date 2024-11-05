@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { SimpleRequestpay, Amount, envs, buildLogger, getAuth } from '../config'
 import { PrismaService } from '../database/prisma/prismaService'
+import { SimpleSaveRequestDB } from '../config/dto/simpleSaveRequestDB'
 
 export class AptpService {
   constructor (private readonly prisma = new PrismaService()) {
@@ -36,22 +37,21 @@ export class AptpService {
       return { error: 'Error al enviar el payload' }
     }
   }
-  async onRequestConsult (requestId: string) {
-    const auth = getAuth()
-    const payload = {
-      auth
-    }
-    const response = await axios.post(`${envs.URLBASE}/${requestId}`, payload)
-
-    const { request } = response.data
-    const { payment, payer } = request
-    const { document, documentType, name, surname, email, mobile } = payer
-    const { date, reason, message } = response.data.status
-    const status = response.data.status.status
-    const lastName = surname
-    const { reference, description,  } = payment
-    const amount = payment.amount.total
-    const guardarTranferencia = {
+  async onRequestConsult(requestId: string) {
+    const auth = getAuth();
+    const payload = { auth };
+    
+    const response = await axios.post(`${envs.URLBASE}/${requestId}`, payload);
+    const { request } = response.data;
+    const { payment, payer } = request;
+    const { document, documentType, name, surname, email, mobile } = payer;
+    const { date, reason, message } = response.data.status;
+    const status = response.data.status.status;
+    const lastName = surname;
+    const { reference, description } = payment;
+    const amount = payment.amount.total;
+    
+    const guardarTranferencia = new SimpleSaveRequestDB(
       name,
       lastName,
       email,
@@ -65,14 +65,13 @@ export class AptpService {
       reason,
       message,
       status
-    }
+    );
+  
     await this.prisma.guardarRegistro(guardarTranferencia)
-    .then((res: any) => {
-      console.log("Guardado")
-    })
-    //console.log(guardarTranferencia)
-    //aqui se puede inicar el proceso para guardar
-    //la informacion en la base de datos antes de mandar la respuesta
-    return response.data
+      .then((response) => console.log(response))
+      .catch((error) => console.log(error));
+  
+    return response.data;
   }
+  
 }
