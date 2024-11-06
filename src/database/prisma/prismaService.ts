@@ -35,7 +35,7 @@ export class PrismaService extends PrismaClient {
         });
         userId = updatedUser.id;
       } else {
-        const newUser = await this.prisma.create({
+        const newUser = await this.payer.create({
           data: {
             name: name,
             lastName: lastName,
@@ -54,7 +54,7 @@ export class PrismaService extends PrismaClient {
           description: description,
           status: status,
           amount: amount,
-          userId: userId,
+          payerId: userId, // Cambie userId por payerId
         },
       });
   

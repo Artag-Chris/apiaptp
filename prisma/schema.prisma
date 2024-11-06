@@ -29,7 +29,7 @@ model Transaction {
   description String
   status    String
   amount    Decimal
-  userId    Int
-  user      User    @relation(fields: [userId], references: [id])
+  payerId    Int
+  payer     Payer    @relation(fields: [payerId], references: [id])
   fecha     DateTime @default(now())
 }
