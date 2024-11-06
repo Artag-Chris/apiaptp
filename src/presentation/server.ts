@@ -27,9 +27,9 @@ export class Server {
     //* Middlewares aqui se configuran los middlewares del server
      
     this.app.use(cors({ origin: '*', 
-       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-       allowedHeaders: ['Content-Type', 'Authorization']
-       }));
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization']
+    }));
     this.app.use(express.json({ limit: '50mb' }));
     this.app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -44,6 +44,7 @@ export class Server {
       const indexPath = path.join(
         __dirname + `../../../${this.publicPath}/index.html`
       );
+      res.header('Access-Control-Allow-Origin', '*');
       res.sendFile(indexPath);
     });
   }

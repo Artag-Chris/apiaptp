@@ -15,6 +15,8 @@ export class AptpRoutes {
   
     router.get(`/consultrequest/:requestId`,aptpController.onConsult);
 
+    router.post(`/test`,aptpController.onTest);
+
     
 
 return router;

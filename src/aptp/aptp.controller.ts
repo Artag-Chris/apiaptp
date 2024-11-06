@@ -20,6 +20,7 @@ export class AptpController {
     
     onLogin= async(req:Request, res:Response) =>{
         const payload= req.body;
+        
         const {reference, description, amount,ipAddress, userAgent } = payload;
         const userAgentValue = userAgent !== null && userAgent !== undefined ? userAgent : 'Desconocido';
 
@@ -40,6 +41,11 @@ export class AptpController {
         .catch((error)=>this.handleError(error, res));
 
         
+    }
+    onTest= async(req:Request, res:Response) =>{
+     const payload= req.body;
+        console.log(payload);
+        res.json(payload);
     }
   
 
