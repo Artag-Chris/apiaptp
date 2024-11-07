@@ -7,7 +7,7 @@ export class PrismaService extends PrismaClient {
      
     super()  
     this.init(); 
-  }
+  }  
   logger = buildLogger(`prismaService.ts`)
   async guardarRegistro(data: SimpleSaveRequestDB) {
     const { name, lastName, email, document, documentType, reference, description, amount, status } = data;
