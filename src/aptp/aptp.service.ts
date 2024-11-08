@@ -65,7 +65,8 @@ export class AptpService {
       date,
       reason,
       message,
-      status
+      status,
+      requestId
     );
   
     await this.prisma.guardarRegistro(guardarTranferencia)

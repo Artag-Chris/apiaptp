@@ -10,17 +10,33 @@ export class PrismaService extends PrismaClient {
   }  
   logger = buildLogger(`prismaService.ts`)
   async guardarRegistro(data: SimpleSaveRequestDB) {
-    const { name, lastName, email, document, documentType, reference, description, amount, status } = data;
-    console.log(data);
+    const { name, lastName, email, document, documentType, reference, description, amount, status, transactionCode } = data;
+    console.log(`transactionCode: ${transactionCode}`);
   
     try {
+      // Verificar si el transactionCode ya existe para el payer
+      const existingTransaction = await this.transaction.findFirst({
+        where: {
+          transactionCode: transactionCode,
+          payer: {
+            email: email,
+          },
+        },
+      });
+  
+      if (existingTransaction) {
+        console.log('Transacción ya guardada');
+        return { message: 'Transacción ya guardada' };
+      }
+  
+      // Si no existe, crear o actualizar el usuario
+      let userId;
       const existingUser = await this.payer.findUnique({
         where: {
           email: email,
         },
       });
   
-      let userId;
       if (existingUser) {
         const updatedUser = await this.payer.update({
           where: {
@@ -54,16 +70,16 @@ export class PrismaService extends PrismaClient {
           description: description,
           status: status,
           amount: amount,
-          payerId: userId, // Cambie userId por payerId
+          payerId: userId,
+          transactionCode: transactionCode,
         },
       });
   
       console.log('Transacción guardada:', transaccion);
-      return transaccion;
+      return { message: 'Transacción guardada con éxito' };
   
     } catch (error: any) {
       const errorMessage = error.response?.data?.status?.message;
-     // this.logger.log(`data:${JSON.stringify(errorMessage)}`);
       throw error;
     }
   }

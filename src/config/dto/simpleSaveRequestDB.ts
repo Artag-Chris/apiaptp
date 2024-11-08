@@ -12,14 +12,15 @@ export class SimpleSaveRequestDB {
       public readonly  date: Date,
       public readonly  reason: string,
       public readonly  message: string,
-      public readonly  status: string
+      public readonly  status: string,
+      public readonly  transactionCode: string
     ) {}
       
     public static create(object: { [key: string]: any }): [string?, SimpleSaveRequestDB?]{
       const { name, lastName, email, 
         mobile, document, documentType, 
         reference, description, amount, date, 
-        reason, message, status } = object
+        reason, message, status,transactionCode } = object
         if (!name) return ['Falta el nombre']
         if (!lastName) return ['Falta el apellido']
         if (!email) return ['Falta el email']
@@ -33,12 +34,13 @@ export class SimpleSaveRequestDB {
         if (!reason) return ['Falta la razon']
         if (!message) return ['Falta el mensaje']
         if (!status) return ['Falta el estado'] 
+        if (!transactionCode) return ['Falta el transactionCode']
 
       
         return [undefined, new SimpleSaveRequestDB(
         name, lastName, email, mobile, document, 
         documentType, reference, description, amount, 
-        date, reason, message, status
+        date, reason, message, status,transactionCode
       )]
     }
 

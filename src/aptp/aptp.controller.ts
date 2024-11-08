@@ -34,7 +34,7 @@ export class AptpController {
     onConsult= async(req:Request, res:Response) =>{
 
         const {requestId}= req.params;
-        console.log('Request ID:', requestId);
+       // console.log('Request ID:', requestId);
        
         await this.aptpService.onRequestConsult(requestId)
         .then((result)=>res.json(result))

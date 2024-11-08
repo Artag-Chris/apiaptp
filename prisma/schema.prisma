@@ -32,4 +32,5 @@ model Transaction {
   payerId    Int
   payer     Payer    @relation(fields: [payerId], references: [id])
   fecha     DateTime @default(now())
+  transactionCode String @default("")
 }
