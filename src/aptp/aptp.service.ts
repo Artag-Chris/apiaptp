@@ -39,6 +39,7 @@ export class AptpService {
     }
   }
   async onRequestConsult(requestId: string) {
+    console.log('requestId', requestId)
     const auth = getAuth();
     const payload = { auth };
     
