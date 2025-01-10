@@ -4,7 +4,9 @@ import { PrismaService } from '../database/prisma/prismaService'
 import { SimpleSaveRequestDB } from '../config/dto/simpleSaveRequestDB'
 
 export class AptpService {
-  constructor (private readonly prisma = new PrismaService()) {
+  constructor (
+  //  private readonly prisma = new PrismaService()
+  ) {
     this.logger = buildLogger(`aptp.service.ts`)
   }
 
@@ -70,9 +72,9 @@ export class AptpService {
       requestId
     );
   
-    await this.prisma.guardarRegistro(guardarTranferencia)
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error));
+    // await this.prisma.guardarRegistro(guardarTranferencia)
+    //   .then((response) => console.log(response))
+    //   .catch((error) => console.log(error));
     return response.data;
   }
 
