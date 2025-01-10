@@ -47,6 +47,14 @@ export class AptpController {
         console.log(payload);
         res.json(payload);
     }
+   //controladora de la ruta donde gou pagos nos enviara la notificacion 
+    onHook=async (req:Request, res:Response)=>{
+        const payload=req.body
+        console.log(payload)
+        //pasar esto al servicio
+         const response =await this.aptpService.onHookUsed(payload)
+        res.json(response)
+    }
   
 
 }

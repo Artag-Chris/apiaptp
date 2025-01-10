@@ -75,5 +75,12 @@ export class AptpService {
       .catch((error) => console.log(error));
     return response.data;
   }
+
+  async onHookUsed (payload: any){
+    //este metodo registrara la transaccion de gou pagos en la base de datos y enviara una notificacion a la api que se encargue del resto
+    //usaremos un dto
+    console.log(payload)
+    return "ok"
+  }
   
 }

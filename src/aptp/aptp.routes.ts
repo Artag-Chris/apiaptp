@@ -16,6 +16,8 @@ export class AptpRoutes {
     router.get(`/consultrequest/:requestId`,aptpController.onConsult);
 
     router.post(`/test`,aptpController.onTest);
+    //esta ruta sera tomada como el webhook para las notificaciones que nos mande gou pagos
+    router.post('/webhook/pasarela',aptpController.onHook)
 
     
 
