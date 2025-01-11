@@ -2,6 +2,7 @@ import axios from 'axios'
 import { SimpleRequestpay, Amount, envs, buildLogger, getAuth } from '../config'
 import { PrismaService } from '../database/prisma/prismaService'
 import { SimpleSaveRequestDB } from '../config/dto/simpleSaveRequestDB'
+import { TransactionResponse } from '../config/interfaces/transactionResponse'
 
 export class AptpService {
   constructor (
@@ -41,36 +42,39 @@ export class AptpService {
     }
   }
   async onRequestConsult(requestId: string) {
-    console.log('requestId', requestId)
+    
     const auth = getAuth();
     const payload = { auth };
     
-    const response = await axios.post(`${envs.URLBASE}/${requestId}`, payload);
-    const { request } = response.data;
-    const { payment, payer } = request;
-    const { document, documentType, name, surname, email, mobile } = payer;
-    const { date, reason, message } = response.data.status;
-    const status = response.data.status.status;
-    const lastName = surname;
-    const { reference, description } = payment;
-    const amount = payment.amount.total;
+    const response = await axios.post <TransactionResponse >(`${envs.URLBASE}/${requestId}`, payload);
+    const { payment,status,request } =   response.data ;
+    const { name, surname, email, mobile, document, documentType } = request.payer;
+     const { amount,reference,paymentMethod,receipt } = payment[0];
+
+     const { date, reason, message } = status;
+     const statuses = status.status;
+    // const lastName = surname;
+    // const { reference, description } = payment;
+    // const amount = payment.amount.total;
+    console.log(`datos del banco:`)
+    console.log(name)
     
-    const guardarTranferencia = new SimpleSaveRequestDB(
-      name,
-      lastName,
-      email,
-      mobile,
-      document,
-      documentType,
-      reference,
-      description,
-      amount,
-      date,
-      reason,
-      message,
-      status,
-      requestId
-    );
+    // const guardarTranferencia = new SimpleSaveRequestDB(
+    //   name,
+    //   lastName,
+    //   email,
+    //   mobile,
+    //   document,
+    //   documentType,
+    //   reference,
+    //   description,
+    //   amount,
+    //   date,
+    //   reason,
+    //   message,
+    //   status,
+    //   requestId
+    // );
   
     // await this.prisma.guardarRegistro(guardarTranferencia)
     //   .then((response) => console.log(response))
