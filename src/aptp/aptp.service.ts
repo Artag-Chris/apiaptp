@@ -20,6 +20,11 @@ export class AptpService {
     ipAddress: string,
     userAgent: string
   ) {
+    /**********************************************************************************************
+    este metodo se encarga de crear el login y la transaccion para la pasarela de pagos pero con metodo simple
+    es decir transferencia normal sin iva ni nada mas que el monto total
+    se puede extender el metodo para agregar mas personalizacion
+    ***********************************************************************************************/
     const paymentMethod: any = 'pse, ath';
     const sendPayload = SimpleRequestpay.createPayload({
       reference,
