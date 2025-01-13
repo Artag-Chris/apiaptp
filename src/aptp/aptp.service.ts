@@ -2,6 +2,7 @@ import axios from 'axios'
 import { SimpleRequestpay, Amount, envs, buildLogger, getAuth } from '../config'
 import { PrismaService } from '../database/prisma/prismaService'
 import { TransactionResponse } from '../config/interfaces/transactionResponse'
+import { TransactionData } from '../config/dto/bankResponse.dto'
 
 export class AptpService {
   constructor(
@@ -62,6 +63,7 @@ export class AptpService {
       const { date, reason, message } = status;
       const { to } = amount;
       const { total, currency } = to;
+      
 
       //Enviar datos a PrismaService para guardar
       if (status.status === 'APPROVED') {
@@ -69,7 +71,7 @@ export class AptpService {
           payer: { name, surname, email, mobile, document, documentType },
           transaction: {
         reference,
-        description: '', // description is not available in PaymentElement
+        description: request.payment.description, 
         status: reason,
         amount: total,
         currency,
@@ -108,38 +110,51 @@ export class AptpService {
     este es el metodo que se encarga de enviar la informacion a la base de datos o al servicio de prisma
     a su vez se encargara de enviar a la api para procesar la transaccion en la base de datos principal
     ******************************************************************************/
-    const transactionData = {
+    const transactionDataObject = {
       payer: payload.request.payer,
-      transaction: {
-        internalReference: payload.payment[0].internalReference,
-        reference: payload.request.payment.reference,
-        description: payload.request.payment.description,
-        status: payload.status.status,
-        amount: payload.payment[0].amount.from.total,
-        currency: payload.payment[0].amount.from.currency,
-        transactionCode: payload.payment[0].authorization,
-        receipt: payload.payment[0].receipt,
-        refunded: payload.payment[0].refunded,
-        franchise: payload.payment[0].franchise,
-        issuerName: payload.payment[0].issuerName,
-        paymentMethod: payload.payment[0].paymentMethod,
-        paymentMethodName: payload.payment[0].paymentMethodName,
-        authorization: payload.payment[0].authorization // Añadir este campo
-      },
+      internalReference: payload.payment[0].internalReference,
+      reference: payload.request.payment.reference,
+      description: payload.request.payment.description,
+      status: payload.status.status,
+      amount: payload.payment[0].amount.from.total,
+      currency: payload.payment[0].amount.from.currency,
+      transactionCode: payload.payment[0].authorization,
+      receipt: payload.payment[0].receipt,
+      refunded: payload.payment[0].refunded,
+      franchise: payload.payment[0].franchise,
+      issuerName: payload.payment[0].issuerName,
+      paymentMethod: payload.payment[0].paymentMethod,
+      paymentMethodName: payload.payment[0].paymentMethodName,
+      authorization: payload.payment[0].authorization
     };
+
+    const [error, transactionData] = TransactionData.create(transactionDataObject);
+
+    if (error) {
+      this.logger.log(`Error: ${error}`);
+      return { error: `Error al crear transactionData: ${error}` };
+    }
+
+    if (!transactionData) {
+      this.logger.log('Error: transactionData is undefined');
+      return { error: 'Error al crear transactionData: transactionData is undefined' };
+    }
+    const payloadToSave = TransactionData.createPayload(transactionData);
+
     if (payload.status.status !== 'APPROVED') {
       return { message: 'OK' };
     }
-    const saveResult: any = await this.prisma.saveTransactionData(transactionData);
-  
 
+    const saveResult: any = await this.prisma.saveTransactionData(payloadToSave);
+    //se movera el return
+     return saveResult;
     // if (saveResult.message === 'Transacción ya guardada') {
     //   return saveResult;
     // }
-    return saveResult;
-    // Enviar la información a una API externa
+
+    // // Enviar la información a una API externa
     // const apiUrl = 'https://external-api.example.com/apply-payment';
-    // const response = await axios.post<any>(apiUrl, transactionData);
+    // const response = await  axios.post(apiUrl, payloadToSave);
 
     // if (response.status === 200) {
     //   return { message: 'Transacción procesada y enviada correctamente' };

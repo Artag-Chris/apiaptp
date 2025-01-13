@@ -36,14 +36,14 @@ export class PrismaService extends PrismaClient {
     });
 
     // Guardar la transacción
-    await this.transaction.create({
+    const savedTransaction = await this.transaction.create({
       data: {
         ...transaction,
         payerId: savedPayer.id
       }
     });
-
-    console.log('Transacción guardada exitosamente');
+return savedTransaction
+    
   }
   async destroy(): Promise<void> {
     await this.$disconnect();
