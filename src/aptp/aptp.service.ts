@@ -42,6 +42,11 @@ export class AptpService {
   }
 
   async onRequestConsult(requestId: string) {
+    /**********************************************************************************************
+    este metodo se encarga de consultar a gou pagos por la transaccion que hizo el cliente
+    si por alguna razon no esta guardada el resultado en la base de datos la guardara en la base
+    tambien este regresara la url de redireccion para que el cliente pueda ver la transaccion
+    ***********************************************************************************************/
     const auth = getAuth();
     const payload = { auth };
 
@@ -59,32 +64,36 @@ export class AptpService {
       const { total, currency } = to;
 
       //Enviar datos a PrismaService para guardar
-      await this.prisma.saveTransactionData({
-        payer: { name, surname, email, mobile, document, documentType },
-        transaction: {
-          reference,
-          description: '', // description is not available in PaymentElement
-          status: reason,
-          amount: total,
-          currency,
-          date,
-          transactionCode: requestId,
-          receipt,
-          refunded,
-          franchise,
-          issuerName,
-          authorization,
-          paymentMethod,
-          internalReference,
-          paymentMethodName
-        }
-      })
-        .then(() => {
-          this.logger.log('Datos guardados en la base de datos');
+      if (status.status === 'APPROVED') {
+        await this.prisma.saveTransactionData({
+          payer: { name, surname, email, mobile, document, documentType },
+          transaction: {
+        reference,
+        description: '', // description is not available in PaymentElement
+        status: reason,
+        amount: total,
+        currency,
+        date,
+        transactionCode: requestId,
+        receipt,
+        refunded,
+        franchise,
+        issuerName,
+        authorization,
+        paymentMethod,
+        internalReference,
+        paymentMethodName
+          }
         })
-        .catch((error) => {
-          this.logger.log(`Error al guardar los datos en la base de datos: ${error}`);
-        });
+          .then(() => {
+        this.logger.log('Datos guardados en la base de datos');
+          })
+          .catch((error) => {
+        this.logger.log(`Error al guardar los datos en la base de datos: ${error}`);
+          });
+      } else {
+        return response.data;
+      }
 
       return response.data;
     } catch (error: any) {
@@ -93,10 +102,12 @@ export class AptpService {
     }
   }
 
+
   async onHookUsed(payload: TransactionResponse) {
-
-
-    // Guardar la transacción usando el método saveTransactionData
+    /**************************************************************************** 
+    este es el metodo que se encarga de enviar la informacion a la base de datos o al servicio de prisma
+    a su vez se encargara de enviar a la api para procesar la transaccion en la base de datos principal
+    ******************************************************************************/
     const transactionData = {
       payer: payload.request.payer,
       transaction: {
@@ -116,8 +127,11 @@ export class AptpService {
         authorization: payload.payment[0].authorization // Añadir este campo
       },
     };
-
+    if (payload.status.status !== 'APPROVED') {
+      return { message: 'OK' };
+    }
     const saveResult: any = await this.prisma.saveTransactionData(transactionData);
+  
 
     // if (saveResult.message === 'Transacción ya guardada') {
     //   return saveResult;
