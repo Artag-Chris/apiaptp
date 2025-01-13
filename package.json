@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-   "dev": "tsnd --respawn --clear src/app.ts",
+    "dev": "tsnd --respawn --clear src/app.ts",
     "build": "rimraf ./dist && tsc",
     "start": "npm run build && node dist/app.js"
   },
@@ -16,11 +16,11 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.7.5",
     "@types/ws": "^8.5.12",
-    "prisma": "^5.22.0",
+    "prisma": "^6.2.1",
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^6.2.1",
     "axios": "^1.7.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

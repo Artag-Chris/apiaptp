@@ -1,99 +1,107 @@
 import { PrismaClient } from '@prisma/client'
 import { buildLogger } from '../../config';
-import { SimpleSaveRequestDB } from '../../config/dto/simpleSaveRequestDB';
+// import { SimpleSaveRequestDB } from '../../config/dto/simpleSaveRequestDB';
 
 export class PrismaService extends PrismaClient {
   constructor () {
               
     super()  
-    this.init(); 
+    // this.init(); 
   }  
   logger = buildLogger(`prismaService.ts`)
-  async guardarRegistro(data: SimpleSaveRequestDB) {
-    const { name, lastName, email, document, documentType, reference, description, amount, status, transactionCode } = data;
-    console.log(`transactionCode: ${transactionCode}`);
   
-    try {
-      // Verificar si el transactionCode ya existe para el payer
-      const existingTransaction = await this.transaction.findFirst({
-        where: {
-          transactionCode: transactionCode,
-          payer: {
-            email: email,
-          },
-        },
-      });
+  // async guardarRegistro(data: SimpleSaveRequestDB) {
+  //   const { name, lastName, email, document, documentType, reference, description, amount, status, transactionCode } = data;
+  // //  console.log(`transactionCode: ${status}`);
   
-      if (existingTransaction) {
-        console.log('Transacción ya guardada');
-        return { message: 'Transacción ya guardada' };
-      }
+  //   try {
+  //     // Verificar si el transactionCode ya existe para el payer
+  //     const existingTransaction = await this.transaction.findFirst({
+  //       where: {
+  //         transactionCode: transactionCode,
+  //         payer: {
+  //           email: email,
+  //         },
+  //       },
+  //     });
   
-      // Si no existe, crear o actualizar el usuario
-      let userId;
-      const existingUser = await this.payer.findUnique({
-        where: {
-          email: email,
-        },
-      });
+  //     if (existingTransaction) {
+  //       console.log('Transacción ya guardada');
+  //       return { message: 'Transacción ya guardada' };
+  //     }
   
-      if (existingUser) {
-        const updatedUser = await this.payer.update({
-          where: {
-            id: existingUser.id,
-          },
-          data: {
-            name: name,
-            lastName: lastName,
-            document: document,
-            documentType: documentType,
-          },
-        });
-        userId = updatedUser.id;
-      } else {
-        const newUser = await this.payer.create({
-          data: {
-            name: name,
-            lastName: lastName,
-            email: email,
-            document: document,
-            documentType: documentType,
-          },
-        });
-        userId = newUser.id;
-      }
+  //     // Crear un nuevo payer si no existe
+  //     let payer = await this.payer.findUnique({
+  //       where: { email: email },
+  //     });
   
-      // Crear transacción
-      const transaccion = await this.transaction.create({
-        data: {
-          reference: reference,
-          description: description,
-          status: status,
-          amount: amount,
-          payerId: userId,
-          transactionCode: transactionCode,
-        },
-      });
+  //     if (!payer) {
+  //       payer = await this.payer.create({
+  //         data: {
+  //           name,
+  //           lastName,
+  //           email,
+  //           document,
+  //           documentType,
+  //         },
+  //       });
+  //     }
   
-      console.log('Transacción guardada:', transaccion);
-      return { message: 'Transacción guardada con éxito' };
+  //     // Crear una nueva transacción
+  //     const newTransaction = await this.transaction.create({
+  //       data: {
+  //         reference,
+  //         description,
+  //         status,
+  //         amount,
+  //         transactionCode,
+  //         payer: {
+  //           connect: { id: payer.id },
+  //         },
+  //       },
+  //     });
   
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.status?.message;
-      throw error;
-    }
-  }
+  //     console.log('Transacción guardada exitosamente');
+  //     return newTransaction;
+  //   } catch (error) {
+  //     console.error('Error al guardar la transacción:', error);
+  //     throw error;
+  //   }
+  // }
 
+  async saveTransactionData(data: { payer: any, transaction: any }) {
+    const { payer, transaction } = data;
 
-  async init() {
-    try {
-      await this.$connect();
-      console.log(`Conexión a la base de datos establecida correctamente.`);
-    } catch (error) {
-      console.error('Error al conectar con la base de datos:', error);
+    // Verificar si la transacción ya existe
+    const existingTransaction = await this.transaction.findFirst({
+      where: {
+        internalReference: transaction.internalReference,
+      },
+    });
+
+    if (existingTransaction) {
+      console.log('Transacción ya guardada');
+      return { message: 'Transacción ya guardada' };
     }
+
+    // Guardar o actualizar el Payer
+    const savedPayer = await this.payer.upsert({
+      where: { email: payer.email },
+      update: { name: payer.name, surname: payer.surname, mobile: payer.mobile, document: payer.document, documentType: payer.documentType },
+      create: { name: payer.name, surname: payer.surname, email: payer.email, mobile: payer.mobile, document: payer.document, documentType: payer.documentType }
+    });
+
+    // Guardar la transacción
+    await this.transaction.create({
+      data: {
+        ...transaction,
+        payerId: savedPayer.id
+      }
+    });
+
+    console.log('Transacción guardada exitosamente');
   }
-  async destroy() {
+  async destroy(): Promise<void> {
     await this.$disconnect();
   }
   

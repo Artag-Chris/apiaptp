@@ -20,10 +20,8 @@ export class AptpController {
     
     onLogin= async(req:Request, res:Response) =>{
         const payload= req.body;
-        
         const {reference, description, amount,ipAddress, userAgent } = payload;
         const userAgentValue = userAgent !== null && userAgent !== undefined ? userAgent : 'Desconocido';
-
          this.aptpService
         .onRequestSimplePayment (reference, description, amount,ipAddress, userAgentValue)
         .then((result)=>res.json(result))
@@ -32,10 +30,7 @@ export class AptpController {
       
     }
     onConsult= async(req:Request, res:Response) =>{
-
         const {requestId}= req.params;
-       // console.log('Request ID:', requestId);
-       
         await this.aptpService.onRequestConsult(requestId)
         .then((result)=>res.json(result))
         .catch((error)=>this.handleError(error, res));
@@ -44,14 +39,12 @@ export class AptpController {
     }
     onTest= async(req:Request, res:Response) =>{
      const payload= req.body;
-        console.log(payload);
         res.json(payload);
     }
    //controladora de la ruta donde gou pagos nos enviara la notificacion 
     onHook=async (req:Request, res:Response)=>{
         const payload=req.body
-        console.log(payload)
-        //pasar esto al servicio
+
          const response =await this.aptpService.onHookUsed(payload)
         res.json(response)
     }

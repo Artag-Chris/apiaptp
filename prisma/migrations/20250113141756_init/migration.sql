@@ -20,6 +20,7 @@ CREATE TABLE `Transaction` (
     `amount` DECIMAL(65, 30) NOT NULL,
     `payerId` INTEGER NOT NULL,
     `fecha` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `transactionCode` VARCHAR(191) NOT NULL DEFAULT '',
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
