@@ -9,10 +9,15 @@ export class SimpleRequestpay {
     public readonly amount: Amount,
     public readonly ipAddress: string,
     public readonly userAgent: string,
-    public readonly paymentMethod: any
+    public readonly paymentMethod: any,
+    public readonly Nombre?: string,
+    public readonly apellido?: string,
+    public readonly documento?: string,
+    public readonly telefono?:string,  
+    public readonly email?: string
   ) {}
   static create (object: { [key: string]: any }): [string?, SimpleRequestpay?] {
-    const { reference, description, amount, ipAddress, userAgent,paymentMethod } = object
+    const { reference, description, amount, ipAddress, userAgent,paymentMethod, Nombre,apellido,documento,telefono } = object
     if (!reference) return ['Falta la referencia']
     if (!description) return ['Falta la descripcion']
     if (!amount) return ['Falta el monto']
@@ -21,11 +26,11 @@ export class SimpleRequestpay {
 console.log(paymentMethod)
     return [
       undefined,
-      new SimpleRequestpay(reference, description, amount, ipAddress, userAgent,paymentMethod)]
+      new SimpleRequestpay(reference, description, amount, ipAddress, userAgent,paymentMethod, Nombre,apellido,documento,telefono)]
   }
   static createPayload (SimpleRequestpay: SimpleRequestpay) {
 
-    const { reference, description, amount, ipAddress, userAgent,paymentMethod } =
+    const { reference, description, amount, ipAddress, userAgent,paymentMethod, Nombre,apellido,documento,telefono,email } =
       SimpleRequestpay
     const auth = getAuth()
     const fechaSumada = sumar5Horas()
@@ -49,7 +54,15 @@ console.log(paymentMethod)
       userAgent,
       expiration: fechaSumada,
       returnUrl,
-      paymentMethod
+      paymentMethod,
+      buyer: {
+        document: documento,
+        documentType: 'CC',
+        name: Nombre,
+        surname: apellido,
+        email: email,
+        mobile: telefono
+      } 
     }
   }
 }

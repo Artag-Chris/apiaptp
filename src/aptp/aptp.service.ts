@@ -18,7 +18,12 @@ export class AptpService {
     description: string,
     amount: Amount,
     ipAddress: string,
-    userAgent: string
+    userAgent: string,
+    Nombre: string,
+    apellido: string,
+    documento: string,
+    telefono: string,
+    email: string
   ) {
     /**********************************************************************************************
     este metodo se encarga de crear el login y la transaccion para la pasarela de pagos pero con metodo simple
@@ -32,7 +37,12 @@ export class AptpService {
       amount,
       ipAddress,
       userAgent,
-      paymentMethod
+      paymentMethod,
+      Nombre,
+      apellido,
+      documento,
+      telefono,
+      email
     })
 
     try {
@@ -68,35 +78,35 @@ export class AptpService {
       const { date, reason, message } = status;
       const { to } = amount;
       const { total, currency } = to;
-      
+
 
       //Enviar datos a PrismaService para guardar
       if (status.status === 'APPROVED') {
         await this.prisma.saveTransactionData({
           payer: { name, surname, email, mobile, document, documentType },
           transaction: {
-        reference,
-        description: request.payment.description, 
-        status: reason,
-        amount: total,
-        currency,
-        date,
-        transactionCode: requestId,
-        receipt,
-        refunded,
-        franchise,
-        issuerName,
-        authorization,
-        paymentMethod,
-        internalReference,
-        paymentMethodName
+            reference,
+            description: request.payment.description,
+            status: reason,
+            amount: total,
+            currency,
+            date,
+            transactionCode: requestId,
+            receipt,
+            refunded,
+            franchise,
+            issuerName,
+            authorization,
+            paymentMethod,
+            internalReference,
+            paymentMethodName
           }
         })
           .then(() => {
-        this.logger.log('Datos guardados en la base de datos');
+            this.logger.log('Datos guardados en la base de datos');
           })
           .catch((error) => {
-        this.logger.log(`Error al guardar los datos en la base de datos: ${error}`);
+            this.logger.log(`Error al guardar los datos en la base de datos: ${error}`);
           });
       } else {
         return response.data;
@@ -152,7 +162,7 @@ export class AptpService {
 
     const saveResult: any = await this.prisma.saveTransactionData(payloadToSave);
     //se movera el return
-     return saveResult;
+    return { status: 'OK', result: saveResult };
     // if (saveResult.message === 'Transacción ya guardada') {
     //   return saveResult;
     // }

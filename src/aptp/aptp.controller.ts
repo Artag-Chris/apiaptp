@@ -19,11 +19,16 @@ export class AptpController {
       };
     
     onLogin= async(req:Request, res:Response) =>{
+        //modificar este metodo para que reciba los nuevos campos del usuario
         const payload= req.body;
-        const {reference, description, amount,ipAddress, userAgent } = payload;
+        const {reference, description, amount,ipAddress, userAgent, email,
+            Nombre,
+            apellido,
+            documento,
+            telefono,  } = payload;
         const userAgentValue = userAgent !== null && userAgent !== undefined ? userAgent : 'Desconocido';
          this.aptpService
-        .onRequestSimplePayment (reference, description, amount,ipAddress, userAgentValue)
+        .onRequestSimplePayment (reference, description, amount,ipAddress, userAgentValue,Nombre,apellido,documento,telefono,email,)
         .then((result)=>res.json(result))
         .catch((error)=>this.handleError(error, res));
         
