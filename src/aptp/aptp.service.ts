@@ -81,36 +81,36 @@ export class AptpService {
 
 
       //Enviar datos a PrismaService para guardar
-      if (status.status === 'APPROVED') {
-        await this.prisma.saveTransactionData({
-          payer: { name, surname, email, mobile, document, documentType },
-          transaction: {
-            reference,
-            description: request.payment.description,
-            status: reason,
-            amount: total,
-            currency,
-            date,
-            transactionCode: requestId,
-            receipt,
-            refunded,
-            franchise,
-            issuerName,
-            authorization,
-            paymentMethod,
-            internalReference,
-            paymentMethodName
-          }
-        })
-          .then(() => {
-            this.logger.log('Datos guardados en la base de datos');
-          })
-          .catch((error) => {
-            this.logger.log(`Error al guardar los datos en la base de datos: ${error}`);
-          });
-      } else {
-        return response.data;
-      }
+      // if (status.status === 'APPROVED') {
+      //   await this.prisma.saveTransactionData({
+      //     payer: { name, surname, email, mobile, document, documentType },
+      //     transaction: {
+      //       reference,
+      //       description: request.payment.description,
+      //       status: reason,
+      //       amount: total,
+      //       currency,
+      //       date,
+      //       transactionCode: requestId,
+      //       receipt,
+      //       refunded,
+      //       franchise,
+      //       issuerName,
+      //       authorization,
+      //       paymentMethod,
+      //       internalReference,
+      //       paymentMethodName
+      //     }
+      //   })
+      //     .then(() => {
+      //       this.logger.log('Datos guardados en la base de datos');
+      //     })
+      //     .catch((error) => {
+      //       this.logger.log(`Error al guardar los datos en la base de datos: ${error}`);
+      //     });
+      // } else {
+      //   return response.data;
+      // }
 
       return response.data;
     } catch (error: any) {
@@ -125,6 +125,8 @@ export class AptpService {
     este es el metodo que se encarga de enviar la informacion a la base de datos o al servicio de prisma
     a su vez se encargara de enviar a la api para procesar la transaccion en la base de datos principal
     ******************************************************************************/
+   console.log("en el hook")
+
     const transactionDataObject = {
       payer: payload.request.payer,
       internalReference: payload.payment[0].internalReference,
@@ -142,6 +144,7 @@ export class AptpService {
       paymentMethodName: payload.payment[0].paymentMethodName,
       authorization: payload.payment[0].authorization
     };
+    console.log(transactionDataObject)
 
     const [error, transactionData] = TransactionData.create(transactionDataObject);
 
